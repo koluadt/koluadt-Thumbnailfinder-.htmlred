@@ -1,0 +1,22 @@
+<!-- templates/dev_requests.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Developer Requests</title>
+</head>
+<body>
+    <h2>🔒 Pending Access Requests</h2>
+    {% for rid, req in requests.items() %}
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+            <p><b>Email:</b> {{ req.email }}</p>
+            <p><b>Creator:</b> {{ req.creator_name }}</p>
+            <p><b>Status:</b> {{ req.status }}</p>
+            {% if req.status == "pending" %}
+            <form method="POST" action="{{ url_for('approve_request', request_id=rid) }}">
+                <button type="submit">✅ Approve</button>
+            </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Match Result</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1c1c1c;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  h1 {
+    color: #e50914;
+    margin-bottom: 40px;
+    text-shadow: 0 0 8px #e50914;
+  }
+  .main-match-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 60px;
+    flex-wrap: wrap;
+    margin-bottom: 60px;
+  }
+  .match-block {
+    background-color: #242424;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(229,9,20,0.4);
+    max-width: 350px;
+    flex: 1 1 350px;
+  }
+  .match-block h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .match-block img {
+    width: 100%;
+    border-radius: 12px;
+    border: 3px solid #e50914;
+    box-shadow: 0 0 15px rgba(229,9,20,0.7);
+  }
+  .creator-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: #e50914;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .creator-link:hover {
+    text-decoration: underline;
+  }
+  .similarity-score {
+    margin-top: 8px;
+    font-weight: 500;
+    color: #bbb;
+  }
+
+  /* Runner-ups and alternates container */
+  .section {
+    max-width: 1000px;
+    margin: 0 auto 60px;
+  }
+  .section h3 {
+    color: #ff6f61;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: left;
+    padding-left: 10px;
+  }
+  .thumbnail-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  .thumbnail-box {
+    width: 130px;
+    background-color: #242424;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 0 12px rgba(229,9,20,0.3);
+    transition: transform 0.2s ease;
+  }
+  .thumbnail-box:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(229,9,20,0.7);
+    z-index: 5;
+  }
+  .thumbnail-box img {
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid transparent;
+  }
+  .thumbnail-box img:hover {
+    border-color: #ff4a4a;
+  }
+  .thumbnail-box a {
+    display: block;
+    margin-top: 8px;
+    font-weight: 600;
+    color: #ff4a4a;
+    text-decoration: none;
+  }
+  .thumbnail-box a:hover {
+    text-decoration: underline;
+  }
+  .thumbnail-box .score {
+    margin-top: 4px;
+    font-size: 0.85em;
+    color: #bbb;
+  }
+
+  /* No match case */
+  .no-match {
+    margin-top: 50px;
+    font-size: 18px;
+    color: #ff5555;
+  }
+  .no-match img {
+    margin-top: 20px;
+    max-width: 350px;
+    border-radius: 12px;
+    border: 3px solid #ff5555;
+  }
+
+  a.try-again {
+    display: inline-block;
+    margin-top: 50px;
+    font-weight: 700;
+    color: #e50914;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  a.try-again:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 700px) {
+    .main-match-row {
+      gap: 30px;
+    }
+    .match-block {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+    .thumbnail-box {
+      width: 100px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <h1>🖼️ Your Match</h1>
+
+  {% if best_match %}
+    <div class="main-match-row">
+      <div class="match-block">
+        <h3>🔼 Uploaded Thumbnail</h3>
+        <img src="/uploads/{{ uploaded }}" alt="Uploaded image" loading="lazy" />
+      </div>
+      <div class="match-block">
+        <h3>🎯 Best Match: {{ best_match.split('.')[0] }}</h3>
+        <img src="/thumbnails/{{ best_match }}" alt="Best match image" loading="lazy" />
+        <a href="/creator/{{ creator_links[best_match]|urlencode }}" class="creator-link">{{ creator_links[best_match] }}</a>
+        <div class="similarity-score">🔍 Similarity Score: {{ best_score | round(4) }}</div>
+      </div>
+    </div>
+
+    {% if runner_ups %}
+      <section class="section runner-ups-section">
+        <h3>👥 Runner-up Matches</h3>
+        <div class="thumbnail-grid">
+          {% for filename, score in runner_ups %}
+            <div class="thumbnail-box" title="Score: {{ score | round(4) }}">
+              <img src="/thumbnails/{{ filename }}" alt="{{ filename }}" loading="lazy" />
+              <a href="/creator/{{ creator_links[filename]|urlencode }}">{{ creator_links[filename] }}</a>
+              <div class="score">Score: {{ score | round(4) }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if alternate_runner_ups %}
+      <section class="section alternate-runner-ups-section">
+        <h3>🔄 From Alternate Creators</h3>
+        <div class="thumbnail-grid">
+          {% for filename, score in alternate_runner_ups %}
+            <div class="thumbnail-box" title="Score: {{ score | round(4) }}">
+              <img src="/thumbnails/{{ filename }}" alt="{{ filename }}" loading="lazy" />
+              <a href="/creator/{{ creator_links[filename]|urlencode }}">{{ creator_links[filename] }}</a>
+              <div class="score">Score: {{ score | round(4) }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  {% else %}
+    <div class="no-match">
+      <h2>❌ No strong match found.</h2>
+      <p>Your thumbnail didn’t closely resemble any known samples in the database.</p>
+      <img src="/uploads/{{ uploaded }}" alt="Uploaded image" loading="lazy" />
+    </div>
+  {% endif %}
+
+  <a href="/" class="try-again">🔁 Try Another</a>
+
+</body>
+</html>

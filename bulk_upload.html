@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Upload Thumbnails</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input, button { padding: 10px; margin-top: 8px; width: 100%; box-sizing: border-box; }
+        .flash-messages { color: green; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>📦 Bulk Upload Thumbnails from YouTube Channel</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        <label for="creator_name">Creator Name:</label>
+        <input id="creator_name" name="creator_name" type="text" placeholder="Enter creator's name" required>
+
+        <label for="channel_url">YouTube Channel URL:</label>
+        <input id="channel_url" name="channel_url" type="url" placeholder="https://www.youtube.com/channel/..." required>
+
+        <button type="submit">Upload Thumbnails</button>
+    </form>
+
+    <a href="/">← Back to Search</a>
+</body>
+</html>

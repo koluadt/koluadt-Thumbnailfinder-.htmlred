@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Creators</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4444;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2a2a;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff4444;
+            box-shadow: 0 0 8px #ff4444;
+        }
+
+        button {
+            padding: 12px;
+            width: 100%;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #cc0000;
+        }
+
+        .creator {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-left: 4px solid #ff4444;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .source {
+            font-size: 0.85em;
+            color: #bbbbbb;
+        }
+
+        a {
+            color: #ff4444;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            color: #ffffff;
+            margin-top: 30px;
+        }
+
+        p {
+            text-align: center;
+            color: #cccccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Search Creators</h1>
+
+    <form method="POST">
+        <input type="text" name="query" placeholder="Enter creator name, email, or phone..." value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+        <h2>Results</h2>
+        {% for r in results %}
+            <div class="creator">
+                <strong>{{ r.name }}</strong><br>
+                {% if r.email %}<div>Email: {{ r.email }}</div>{% endif %}
+                {% if r.phone %}<div>Phone: {{ r.phone }}</div>{% endif %}
+                <div class="source">Source: {{ r.source }}</div>
+                {% if r.link %}
+                    <div><a href="{{ url_for('creator_profile', name=r.name) }}">View Profile →</a></div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% elif query %}
+        <p>No results found.</p>
+    {% endif %}
+
+    <p><a href="/">← Back to Home</a></p>
+</body>
+</html>

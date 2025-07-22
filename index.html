@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Thumbnail Matcher</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1c1c1c;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .ad-column {
+            width: 160px;
+            padding: 20px 10px;
+            font-size: 14px;
+            color: #bbb;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .ad-placeholder {
+            background-color: #1e1e1e;
+            border: 1px dashed #444;
+            padding: 10px;
+        }
+
+        .main-content {
+            max-width: 700px;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        img.logo {
+            max-width: 180px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .status-bar {
+            font-size: 14px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .status-bar a {
+            color: #e50914;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .status-bar a:hover {
+            text-decoration: underline;
+        }
+
+        a {
+            color: #e50914;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .search-box {
+            background-color: #242424;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-box h3 {
+            margin-top: 0;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            text-align: center;
+        }
+
+        .search-box h3 strong {
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .search-box input[type="file"],
+        .search-box input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            box-sizing: border-box;
+        }
+
+        .search-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e50914;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-box button:hover {
+            background-color: #ff1f2f;
+        }
+
+        .footer-link {
+            margin-top: 25px;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .ad-column {
+                width: 100%;
+                max-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Ad -->
+    <div class="ad-column">
+        {% if left_ad_content %}
+            <img src="{{ url_for('static', filename='ads/' ~ left_ad_content) }}" style="max-width: 100%;">
+        {% else %}
+            <div class="ad-placeholder">
+                Contact <strong>thumbnailmatcher@gmail.com</strong><br> to advertise here
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <img src="{{ url_for('static', filename='logo/logo.png') }}" alt="Logo" class="logo">
+        <h1>YouTube Thumbnail Matcher</h1>
+        <p><a href="{{ url_for('search_creators') }}">🔎 Search Creators</a></p>
+
+        <div class="status-bar">
+            {% if user_email %}
+                ✅ Logged in as: <strong>{{ user_email }}</strong>
+                <a href="/logout">Logout</a>
+            {% else %}
+                🔒 You are not logged in.
+                <a href="/login">Login</a> |
+                <a href="/register">Register</a>
+            {% endif %}
+        </div>
+
+        <form class="search-box" method="post" enctype="multipart/form-data" action="/search">
+            <h3>Upload a thumbnail <strong>OR</strong> paste a YouTube link</h3>
+
+            <input type="file" name="thumbnail" accept=".jpg,.jpeg,.png">
+            <input type="text" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+
+            <button type="submit">Find Match</button>
+
+            <div class="footer-link">
+                <a href="/add">🆕 Add Thumbnail to Database</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Right Ad -->
+    <div class="ad-column">
+        {% if right_ad_content %}
+            <img src="{{ url_for('static', filename='ads/' ~ right_ad_content) }}" style="max-width: 100%;">
+        {% else %}
+            <div class="ad-placeholder">
+                Contact <strong>thumbnailmatcher@gmail.com</strong><br> to advertise here
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

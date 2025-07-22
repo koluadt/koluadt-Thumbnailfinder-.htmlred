@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Thumbnail</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            padding: 40px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #ff2c2c;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 44, 44, 0.3);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        input[type="url"],
+        button {
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 5px;
+        }
+
+        input[type="text"],
+        input[type="url"] {
+            background-color: #3a3a3a;
+            color: #fff;
+        }
+
+        input[type="file"] {
+            background-color: #2e2e2e;
+            color: #ddd;
+        }
+
+        button {
+            background-color: #ff2c2c;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #e12020;
+        }
+
+        .flash-messages {
+            color: #00ff99;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        p.or {
+            text-align: center;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #aaa;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            color: #ff2c2c;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Checkbox and label */
+        input#keepCreator {
+            width: auto;
+            vertical-align: middle;
+            margin-top: 15px;
+            margin-right: 5px;
+        }
+
+        label.keep-creator-label {
+            font-weight: normal;
+            display: inline-block;
+            font-size: 0.9em;
+            vertical-align: middle;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>➕ Add Thumbnail</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+        <label for="creator">Creator Name (for placeholder account):</label>
+        <input id="creator" type="text" name="creator" placeholder="Enter creator's name" required>
+
+        <input type="checkbox" id="keepCreator" />
+        <label for="keepCreator" class="keep-creator-label">Keep creator name</label>
+
+        <label for="thumbnail">Upload Thumbnail Image:</label>
+        <input id="thumbnail" type="file" name="thumbnail" accept=".jpg,.jpeg,.png">
+
+        <p class="or">OR</p>
+
+        <label for="youtube_url">Paste YouTube Video Link:</label>
+        <input id="youtube_url" type="url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+
+        <button type="submit">Add to Database</button>
+    </form>
+
+    <a href="/">← Back to Search</a>
+
+    <script>
+        function toggleKeepCreator() {
+            const checkbox = document.getElementById("keepCreator");
+            const creatorField = document.getElementById("creator");
+            if (checkbox.checked) {
+                localStorage.setItem("keepCreatorName", "true");
+                localStorage.setItem("savedCreatorName", creatorField.value);
+            } else {
+                localStorage.removeItem("keepCreatorName");
+                localStorage.removeItem("savedCreatorName");
+            }
+        }
+
+        window.onload = function () {
+            const saved = localStorage.getItem("keepCreatorName");
+            const savedName = localStorage.getItem("savedCreatorName");
+            const checkbox = document.getElementById("keepCreator");
+            const creatorField = document.getElementById("creator");
+
+            if (saved && savedName) {
+                checkbox.checked = true;
+                creatorField.value = savedName;
+            }
+
+            checkbox.addEventListener("change", toggleKeepCreator);
+
+            creatorField.addEventListener("input", () => {
+                if (localStorage.getItem("keepCreatorName")) {
+                    localStorage.setItem("savedCreatorName", creatorField.value);
+                }
+            });
+        };
+    </script>
+</body>
+</html>

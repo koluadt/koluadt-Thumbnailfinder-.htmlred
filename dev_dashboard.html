@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Developer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; }
+        h1 { text-align: center; }
+        .request { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; }
+        .request form { display: inline; margin-right: 10px; }
+        .email-history, .merge-creators, .delete-library, .ad-editor { margin-top: 40px; }
+        input[type="email"], select, textarea { width: 100%; padding: 8px; margin-top: 10px; box-sizing: border-box; }
+        .history-entry { border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; }
+        .status-approved { color: green; }
+        .status-denied { color: red; }
+        .status-pending { color: orange; }
+        .view-history-button {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛠 Developer Dashboard</h1>
+
+    <h2>Pending Access Requests</h2>
+    {% if requests %}
+        {% for req_id, req in requests.items() %}
+            <div class="request">
+                <strong>Email:</strong> {{ req.email }}<br>
+                <strong>Creator Profile:</strong> {{ req.creator_name }}<br>
+                <strong>Status:</strong> <span class="status-pending">{{ req.status }}</span><br>
+
+                <form method="POST">
+                    <input type="hidden" name="request_id" value="{{ req_id }}">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit">✅ Approve</button>
+                </form>
+
+                <form method="POST">
+                    <input type="hidden" name="request_id" value="{{ req_id }}">
+                    <input type="hidden" name="action" value="deny">
+                    <button type="submit">❌ Deny</button>
+                </form>
+
+                <a class="view-history-button" href="{{ url_for('email_history') }}?email={{ req.email }}">📜 View History</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No pending requests.</p>
+    {% endif %}
+
+    <div class="email-history">
+        <h2>🔍 Search Email History</h2>
+        <form method="GET" action="{{ url_for('email_history') }}">
+            <input type="email" name="email" placeholder="Enter email to search history..." required>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="merge-creators">
+        <h2>🔁 Merge Creators</h2>
+        <form method="POST" action="{{ url_for('merge_creators') }}">
+            <label for="source_creator"><strong>Source (to delete):</strong></label><br>
+            <select id="source_creator" name="source_creator" class="creator-select" required>
+                {% for creator in all_creators %}
+                    <option value="{{ creator }}">{{ creator }}</option>
+                {% endfor %}
+            </select><br><br>
+
+            <label for="target_creator"><strong>Target (to keep):</strong></label><br>
+            <select id="target_creator" name="target_creator" class="creator-select" required>
+                {% for creator in all_creators %}
+                    <option value="{{ creator }}">{{ creator }}</option>
+                {% endfor %}
+            </select><br><br>
+
+            <button type="submit">🔁 Merge Creators</button>
+        </form>
+    </div>
+
+    <div class="delete-library">
+        <h2>🗑 Delete Creator Library</h2>
+        <form method="POST" action="{{ url_for('delete_library') }}">
+            <label for="library_key"><strong>Select Library to Delete:</strong></label>
+            <select name="library_key" class="library-select" required>
+                {% for key, data in placeholders.items() %}
+                    <option value="{{ key }}">{{ data.creator_name }}</option>
+                {% endfor %}
+            </select><br><br>
+            <button type="submit" onclick="return confirm('Are you sure you want to delete this entire library and all its data? This cannot be undone.')">🗑 Delete Library</button>
+        </form>
+    </div>
+
+    <div class="ad-editor">
+        <h2>📢 Update Homepage Ads</h2>
+        <form method="POST" action="{{ url_for('update_ads') }}" enctype="multipart/form-data">
+            <label><strong>Left Ad Image:</strong></label><br>
+            {% if ads.left %}
+                <img src="{{ url_for('static', filename='ads/' ~ ads.left) }}" width="120"><br>
+            {% endif %}
+            <input type="file" name="left_ad_image" accept="image/*"><br><br>
+
+            <label><strong>Right Ad Image:</strong></label><br>
+            {% if ads.right %}
+                <img src="{{ url_for('static', filename='ads/' ~ ads.right) }}" width="120"><br>
+            {% endif %}
+            <input type="file" name="right_ad_image" accept="image/*"><br><br>
+
+            <button type="submit">💾 Save Ads</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('.creator-select').select2({ placeholder: "Select a creator...", width: '100%' });
+            $('.library-select').select2({ placeholder: "Select a library...", width: '100%' });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email History for {{ email }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 40px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        .history-table th,
+        .history-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .history-table th {
+            background-color: #f4f4f4;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Request History for {{ email }}</h1>
+
+    {% if requests %}
+        <table class="history-table">
+            <tr>
+                <th>Creator Name</th>
+                <th>Status</th>
+            </tr>
+            {% for req in requests %}
+                <tr>
+                    <td>{{ req.creator_name }}</td>
+                    <td>{{ req.status }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No access requests found for this email.</p>
+    {% endif %}
+
+    <a class="back-link" href="{{ url_for('dev_dashboard') }}">← Back to Dev Dashboard</a>
+</body>
+</html>
